@@ -1,0 +1,3 @@
+class WaveFunctionCollapse
+
+end
