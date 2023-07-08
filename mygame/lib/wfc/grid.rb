@@ -1,5 +1,5 @@
 class Wfc::Grid
-  def init(width, height, resolution, tiles)
+  def initialize(width, height, resolution, tiles)
     @resolution = resolution
     @width = width / resolution
     @height = height / resolution
