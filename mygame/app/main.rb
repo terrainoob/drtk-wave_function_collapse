@@ -15,4 +15,8 @@ def tick args
                             text: './mygame/app/main.rb',
                             size_enum: 5,
                             alignment_enum: 1 }
+  if args.tick_count.zero?
+    pixel_array = args.gtk.get_pixels 'sprites/misc/star.png'
+    puts pixel_array
+  end
 end

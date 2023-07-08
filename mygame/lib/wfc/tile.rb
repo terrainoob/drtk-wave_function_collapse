@@ -1,0 +1,3 @@
+class Wfc::Tile
+
+end
