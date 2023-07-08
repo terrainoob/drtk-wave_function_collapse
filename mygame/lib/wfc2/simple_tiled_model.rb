@@ -44,11 +44,17 @@ class Wfc2::SimpleTiledModel
   end
 
   def solve
+    # randomly select a first cell to collapse
     x = rand(@output_width)
     y = rand(@output_height)
     cell = @process_grid[x][y]
     cell.collapse
     propagate(cell)
+
+    # select the cell neighbor with the lowest entropy
+    # loop until all cells are collapsed:
+      # cell.collapse
+      # propagate(cell)
     # return the output things
   end
 
