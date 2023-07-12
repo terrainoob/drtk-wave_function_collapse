@@ -1,3 +1,8 @@
+require 'lib/wfc2/cell.rb'
+require 'lib/wfc2/tile.rb'
+require 'lib/wfc2/simple_tiled_model.rb'
+require 'lib/wfc2/overlapping_model.rb'
+
 def tick args
   args.outputs.labels  << [640, 540, 'Hello World!', 5, 1]
   args.outputs.labels  << [640, 500, 'Docs located at ./docs/docs.html and 100+ samples located under ./samples', 5, 1]
