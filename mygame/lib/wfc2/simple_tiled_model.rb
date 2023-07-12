@@ -32,11 +32,11 @@ module Wfc2
       @tile_set = tile_set
       @output_width = output_width
       @output_height = output_height
+
       # initialize processing grid
-      @process_grid = []
+      @process_grid = Array.new(@output_width) { Array.new(@output_height) }
       x = 0
       while x < @output_width
-        @process_grid[x] = []
         y = 0
         while y < @output_height
           @process_grid[x][y] = Wfc2::Cell.new(@tile_set)
@@ -54,29 +54,28 @@ module Wfc2
       cell.collapse
       propagate(cell)
 
-      # select the cell neighbor with the lowest entropy ???
-      # loop until all cells are collapsed:
-        # cell.collapse
-        # propagate(cell)
-      # return the output things
+      while true # what do we check here? How do we know when the last cell is collapsed?
+        # find the uncollapsed neighbor with the lowest entropy to collapse next
+        sorted_neighbor_array = cell.neighbors.sort_by do |a, b|
+          a.available_tiles.length <=> b.available_tiles.length
+        end.reject(&:collapsed)
+        next_cell = sorted_neighbor_array[0]
+        next_cell.collapse
+        propagate(next_cell)
+      end
+      # the following might be complete BS. Does this work? Works on my whiteboard!
+      @process_grid.map { |arr| arr.map { |arr2| arr2.available_tiles[0] } }
     end
 
     def propagate(source_cell)
-      x = source_cell.x
-      y = source_cell.y
-
-      # neighbor above
-      evaluate_neighbor(source_cell, @process_grid[x][y + 1], :down) if y + 1 < @output_height
-      # neighbor below
-      evaluate_neighbor(source_cell, @process_grid[x][y - 1], :up) if y > 0
-      # neighbor right
-      evaluate_neighbor(source_cell, @process_grid[x + 1][y], :left) if x + 1 < @output_width
-      # neighbor left
-      evaluate_neighbor(source_cell, @process_grid[x - 1][y], :right) if x > 0
+      evaluate_neighbor(source_cell, source_cell.neighbors[:up], :down)
+      evaluate_neighbor(source_cell, source_cell.neighbors[:down], :up)
+      evaluate_neighbor(source_cell, source_cell.neighbors[:right], :left)
+      evaluate_neighbor(source_cell, source_cell.neighbors[:left], :right)
     end
 
     def evaluate_neighbor(source_cell, neighbor_cell, evaluation_direction)
-      return if neighbor_cell.collapsed # we can't evaluate further than "collapsed"
+      return if neighbor_cell.nil? || neighbor_cell.collapsed # we can't evaluate further than "collapsed"
 
       original_tile_count = neighbor_cell.available_tiles.length
       source_cell.available_tiles.each do |source_tile|

@@ -20,5 +20,14 @@ module Wfc2
       @available_tiles = [@available_tiles.sample]
       @collapsed = true
     end
+
+    def neighbors(grid)
+      @neighbors ||= {
+        up: grid[@x][@y + 1],
+        down: grid[@x][@y - 1],
+        right: grid[@x + 1][@y],
+        left: grid[@x - 1][@y]
+      }
+    end
   end
 end
