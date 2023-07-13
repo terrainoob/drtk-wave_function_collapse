@@ -1,4 +1,4 @@
-module Wfc2
+module Wfc
   class OverlappingModel
   end
 end

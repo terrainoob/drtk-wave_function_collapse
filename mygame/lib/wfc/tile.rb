@@ -1,4 +1,4 @@
-module Wfc2
+module Wfc
   class Tile
     attr_reader :identifier
     attr_accessor :rules

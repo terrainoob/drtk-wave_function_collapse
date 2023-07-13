@@ -1,4 +1,4 @@
-module Wfc2
+module Wfc
   class Cell
     attr_reader :x, :y, :available_tiles, :collapsed, :neighbors
 

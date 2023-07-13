@@ -1,4 +1,4 @@
-module Wfc2
+module Wfc
   class SimpleTiledModel
     # PSEUDOCODE
     # =====================================================
@@ -18,7 +18,7 @@ module Wfc2
     # =====================================================
 
 
-    # The tile_set should be an array of Wfc2::Tile objects. Each one should be assigned
+    # The tile_set should be an array of Wfc::Tile objects. Each one should be assigned
     # an identifier (most likely an array index of some sort) and a rules hash. See tile.rb
     # for rules hash structure.
 
@@ -39,7 +39,7 @@ module Wfc2
       while x < @output_width
         y = 0
         while y < @output_height
-          @process_grid[x][y] = Wfc2::Cell.new(x, y, @tile_set, @process_grid)
+          @process_grid[x][y] = Wfc::Cell.new(x, y, @tile_set, @process_grid)
           y += 1
         end
         x += 1

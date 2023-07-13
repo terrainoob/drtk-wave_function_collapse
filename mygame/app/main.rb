@@ -1,7 +1,7 @@
-require 'lib/wfc2/cell.rb'
-require 'lib/wfc2/tile.rb'
-require 'lib/wfc2/simple_tiled_model.rb'
-require 'lib/wfc2/overlapping_model.rb'
+require 'lib/wfc/cell.rb'
+require 'lib/wfc/tile.rb'
+require 'lib/wfc/simple_tiled_model.rb'
+require 'lib/wfc/overlapping_model.rb'
 
 def tick args
   args.outputs.labels  << [640, 540, 'Hello World!', 5, 1]
@@ -23,7 +23,7 @@ def tick args
 
   if args.tick_count.zero?
     tiles = create_tile_array
-    tiled_map = Wfc2::SimpleTiledModel.solve(tiles, 10, 10)
+    tiled_map = Wfc::SimpleTiledModel.solve(tiles, 10, 10)
     puts tiled_map
   end
 end
@@ -31,7 +31,7 @@ end
 def create_tile_array
   tiles = Array.new(9)
   9.times do |x|
-    tile = Wfc2::Tile.new(rand(1000)) # for now, just give some random identifier for testing
+    tile = Wfc::Tile.new(rand(1000)) # for now, just give some random identifier for testing
     tiles[x] = tile
   end
 
