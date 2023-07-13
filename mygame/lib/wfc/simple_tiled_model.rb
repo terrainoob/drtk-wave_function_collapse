@@ -39,7 +39,7 @@ module Wfc
       while x < @output_width
         y = 0
         while y < @output_height
-          @process_grid[x][y] = Wfc::Cell.new(x, y, @tile_set, @process_grid)
+          @process_grid[x][y] = Wfc::Cell.new(x, y, @tile_set)
           y += 1
         end
         x += 1
@@ -54,35 +54,32 @@ module Wfc
       cell.collapse
       propagate(cell)
 
-      x = 0 # temporary
-      while x < 100 # what do we check here? How do we know when the last cell is collapsed?
-        # find the uncollapsed neighbor with the lowest entropy to collapse next
-        sorted_neighbor_array = cell.neighbors.sort_by do |a, b|
-          a.available_tiles.length <=> b.available_tiles.length
-        end.reject(&:collapsed)
-        next_cell = sorted_neighbor_array[0]
-        next_cell.collapse
-        propagate(next_cell)
-        x += 1 # temporary
-      end
+      #  unsolved_cells = @process_grid.clone
+      #  every time we successfully collapse a cell, remove that cell from unsolved_cells
+      #  each unsolved cell should keep an entropy value
+      #  find next unsolved cell, collapse it, and propagate it.
+
       # the following might be complete BS. Does this work? Works on my whiteboard!
       @process_grid.map { |arr| arr.map { |arr2| arr2.available_tiles[0] } }
     end
 
     def propagate(source_cell)
-      evaluate_neighbor(source_cell, source_cell.neighbors[:up], :down)
-      evaluate_neighbor(source_cell, source_cell.neighbors[:down], :up)
-      evaluate_neighbor(source_cell, source_cell.neighbors[:right], :left)
-      evaluate_neighbor(source_cell, source_cell.neighbors[:left], :right)
+      evaluate_neighbor(source_cell, source_cell.neighbors(@process_grid)[:up], :down)
+      evaluate_neighbor(source_cell, source_cell.neighbors(@process_grid)[:down], :up)
+      evaluate_neighbor(source_cell, source_cell.neighbors(@process_grid)[:right], :left)
+      evaluate_neighbor(source_cell, source_cell.neighbors(@process_grid)[:left], :right)
     end
 
     def evaluate_neighbor(source_cell, neighbor_cell, evaluation_direction)
       return if neighbor_cell.nil? || neighbor_cell.collapsed # we can't evaluate further than "collapsed"
 
       original_tile_count = neighbor_cell.available_tiles.length
+
       source_cell.available_tiles.each do |source_tile|
-        neighbor_cell.available_tiles.select! do |tile|
-          tile.rules[evaluation_direction].include?(source_tile.identifier)
+        neighbor_cell.available_tiles.each do |row|
+          row.select! do |tile|
+            tile.rules[evaluation_direction]&.include?(source_tile.identifier)
+          end
         end
       end
       # if the number of available_tiles changed, we need to evaluate THIS cell's neighbors now
