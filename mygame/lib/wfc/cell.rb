@@ -1,13 +1,13 @@
 module Wfc
   class Cell
-    attr_reader :x, :y, :available_tiles, :collapsed, :grid
+    attr_accessor :available_tiles
+    attr_reader :x, :y, :collapsed, :grid
 
     # x: the x coord of this cell in the cell array
     # y: the y coord of this cell in the cell array
     # available_tiles: an array of Tile objects with their rules attached
     def initialize(x, y, available_tiles)
-      grid = grid
-      @available_tiles = available_tiles
+      @available_tiles = available_tiles.flatten
       @collapsed = false
       @x = x
       @y = y
@@ -20,7 +20,7 @@ module Wfc
     def collapse
       return if @available_tiles.nil?
 
-      @available_tiles = [@available_tiles[rand(@available_tiles.length)].sample]
+      @available_tiles = [@available_tiles.sample]
       @collapsed = true
     end
 

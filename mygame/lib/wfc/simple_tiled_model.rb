@@ -54,7 +54,6 @@ module Wfc
       cell.collapse
       propagate(cell)
 
-      #  unsolved_cells = @process_grid.clone
       #  every time we successfully collapse a cell, remove that cell from unsolved_cells
       #  each unsolved cell should keep an entropy value
       #  find next unsolved cell, collapse it, and propagate it.
@@ -75,15 +74,18 @@ module Wfc
 
       original_tile_count = neighbor_cell.available_tiles.length
 
+      new_available_tiles = []
       source_cell.available_tiles.each do |source_tile|
-        neighbor_cell.available_tiles.each do |row|
-          row.select! do |tile|
-            tile.rules[evaluation_direction]&.include?(source_tile.identifier)
-          end
+        neighbor_cell.available_tiles.each do |tile|
+          new_available_tiles << tile if tile.rules[evaluation_direction]&.include?(source_tile.identifier)
         end
       end
+      neighbor_cell.available_tiles = new_available_tiles.uniq(&:identifier) unless new_available_tiles.empty?
+      neighbor_cell.update
+
       # if the number of available_tiles changed, we need to evaluate THIS cell's neighbors now
       propagate(neighbor_cell) if neighbor_cell.available_tiles.length != original_tile_count
+
       # stop infinite recursion!  Hand wavy
     end
   end
