@@ -5,10 +5,13 @@ module Wfc2
 
     # rules hash: each cardinal direction is a Set of Tile identifiers that are valid
     # in that direction from this Tile
-    # Note Set is used here intead of Array because its .include? implementation is faster
+
+    # Note an implementation of cruby's Set should used here intead of Array because
+    # its .include? implementation is faster
+    # However, that's not mechanically necessary.  Array will work.
     def initialize(identifier)
       @identifier = identifier
-      @rules = { up: [null], down: [null], left: [null], right: [null] }
+      @rules = { up: [nil], down: [nil], left: [nil], right: [nil] }
     end
   end
 end

@@ -39,7 +39,7 @@ module Wfc2
       while x < @output_width
         y = 0
         while y < @output_height
-          @process_grid[x][y] = Wfc2::Cell.new(@tile_set)
+          @process_grid[x][y] = Wfc2::Cell.new(x, y, @tile_set, @process_grid)
           y += 1
         end
         x += 1
@@ -54,7 +54,8 @@ module Wfc2
       cell.collapse
       propagate(cell)
 
-      while true # what do we check here? How do we know when the last cell is collapsed?
+      x = 0 # temporary
+      while x < 100 # what do we check here? How do we know when the last cell is collapsed?
         # find the uncollapsed neighbor with the lowest entropy to collapse next
         sorted_neighbor_array = cell.neighbors.sort_by do |a, b|
           a.available_tiles.length <=> b.available_tiles.length
@@ -62,6 +63,7 @@ module Wfc2
         next_cell = sorted_neighbor_array[0]
         next_cell.collapse
         propagate(next_cell)
+        x += 1 # temporary
       end
       # the following might be complete BS. Does this work? Works on my whiteboard!
       @process_grid.map { |arr| arr.map { |arr2| arr2.available_tiles[0] } }
