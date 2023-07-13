@@ -1,6 +1,6 @@
 module Wfc
   class Cell
-    attr_reader :x, :y, :available_tiles, :collapsed, :neighbors
+    attr_reader :x, :y, :available_tiles, :collapsed, :grid
 
     # x: the x coord of this cell in the cell array
     # y: the y coord of this cell in the cell array
@@ -25,12 +25,13 @@ module Wfc
     end
 
     def neighbors
-      @neighbors ||= {
-        up: @grid[@x][@y + 1],
-        down: @grid[@x][@y - 1],
-        right: @grid[@x + 1][@y],
-        left: @grid[@x - 1][@y]
-      }
+      @neighbors ||= begin
+        up = @grid[@x][@y + 1] if @y < @grid[0].length
+        down = @grid[@x][@y - 1] if @y.positive?
+        right = @grid[@x + 1][@y] if @x < @grid.length
+        left = @grid[@x - 1][@y] if @x.positive?
+        { up: up, down: down, right: right, left: left }
+      end
     end
   end
 end
