@@ -24,7 +24,14 @@ def tick args
 
   if args.tick_count.zero?
     tiles = create_tile_array
-    tiled_map = Wfc::SimpleTiledModel.solve(tiles, 10, 10)
+    args.state.model = Wfc::SimpleTiledModel.new(tiles, 10, 10)
+    tiled_map = args.state.model.solve
+    puts tiled_map
+    # display the first iteration of tiled_map
+  end
+
+  while tiled_map = args.state.model.iterate
+    # display each solution iteration of tiled_map
     puts tiled_map
   end
 end
@@ -32,17 +39,8 @@ end
 def create_tile_array
   tiles = Array.new(9)
   9.times do |x|
-    tile = Wfc::Tile.new(rand(1000)) # for now, just give some random identifier for testing
+    tile = Wfc::Tile.new(rand(1000), [3,1,3,2]) # for now, just give some random identifier for testing
     tiles[x] = tile
   end
-
-  idents = tiles.map { |t| t.identifier}.flatten
-  puts idents
-  tiles.each do |tile|
-    tile.rules[:up] = idents.sample
-    tile.rules[:down] = idents.sample
-    tile.rules[:left] = idents.sample
-    tile.rules[:right] = idents.sample
-  end
-  puts tiles.map(&:rules)
+  tiles
 end
