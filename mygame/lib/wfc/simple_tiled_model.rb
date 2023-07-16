@@ -38,7 +38,7 @@ module Wfc
     end
 
     def iterate
-      @uncollapsed_cells_grid.collapse!
+      @uncollapsed_cells_grid.compact!
       return false if @uncollapsed_cells_grid.empty?
 
       next_cell = find_lowest_entropy
@@ -86,7 +86,7 @@ module Wfc
 
     def find_lowest_entropy
       @uncollapsed_cells_grid.compact!
-      @uncollapsed_cells_grid.sort!{ |cell| cell.entropy }
+      @uncollapsed_cells_grid.sort! { |c1, c2| c1.entropy <=> c2.entropy }
       @uncollapsed_cells_grid.first
     end
   end
