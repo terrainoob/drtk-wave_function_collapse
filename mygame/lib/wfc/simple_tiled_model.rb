@@ -61,7 +61,7 @@ module Wfc
     end
 
     def evaluate_neighbor(source_cell, evaluation_direction)
-      neighbor_cell = source_cell.neighbors(@process_grid)[OPPOSITE_OF[evaluation_direction]]
+      neighbor_cell = source_cell.neighbors(@process_grid)[evaluation_direction]
       return if neighbor_cell.nil? || neighbor_cell.collapsed # we can't evaluate further than "collapsed"
 
       original_tile_count = neighbor_cell.available_tiles.length
