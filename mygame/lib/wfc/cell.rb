@@ -24,6 +24,10 @@ module Wfc
       @collapsed = true
     end
 
+    def entropy
+      @available_tiles.length
+    end
+
     def neighbors(grid)
       return if grid.nil?
 

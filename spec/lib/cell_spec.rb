@@ -3,36 +3,13 @@ require 'spec_helper'
 describe Wfc::Cell do
   let(:x) { 0 }
   let(:y) { 0 }
-  let(:tile1) do
-    tile = Wfc::Tile.new(1)
-    tile.rules = { up: nil, down: [4], right: [2], left: nil }
-    tile
-  end
-  let(:tile2) do
-    tile = Wfc::Tile.new(2)
-    tile.rules = { up: nil, down: [5], right: [3], left: [1] }
-    tile
-  end
-  let(:tile3) do
-    tile = Wfc::Tile.new(3)
-    tile.rules = { up: nil, down: [6], right: nil, left: [2] }
-    tile
-  end
-  let(:tile4) do
-    tile = Wfc::Tile.new(4)
-    tile.rules = { up: [1], down: nil, right: [5], left: nil }
-    tile
-  end
-  let(:tile5) do
-    tile = Wfc::Tile.new(5)
-    tile.rules = { up: [2], down: nil, right: [6], left: [4] }
-    tile
-  end
-  let(:tile6) do
-    tile = Wfc::Tile.new(6)
-    tile.rules = { up: [3], down: nil, right: nil, left: [5] }
-    tile
-  end
+  let(:tile1) { Wfc::Tile.new(1, [nil, 1, 2, 3]) }
+  let(:tile2) { Wfc::Tile.new(2, [2, 2, 4, 3]) }
+  let(:tile3) { Wfc::Tile.new(3, [3, 2, 4, 5]) }
+  let(:tile4) { Wfc::Tile.new(4, [3, 6, 1, 8]) }
+  let(:tile5) { Wfc::Tile.new(5, [6, nil, nil, 3]) }
+  let(:tile6) { Wfc::Tile.new(6, [8, 3, 3, 3]) }
+
   let(:available_tiles) do
     [
       [tile1, tile2, tile3],

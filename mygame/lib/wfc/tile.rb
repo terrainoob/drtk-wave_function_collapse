@@ -1,17 +1,16 @@
 module Wfc
   class Tile
-    attr_reader :identifier
-    attr_accessor :rules
+    attr_reader :identifier, :edge_types
 
-    # rules hash: each cardinal direction is a Set of Tile identifiers that are valid
-    # in that direction from this Tile
+    # edge_types: the edge type identifiers of each of the four edges of this tile
+    #             these are expected to be passed in as an array with the first
+    #             element being the top edge type and then proceeding clockwise.
+    #             So:
+    #             edge_types[top, right, bottom, left]
 
-    # Note an implementation of cruby's Set should used here intead of Array because
-    # its .include? implementation is faster
-    # However, that's not mechanically necessary.  Array will work.
-    def initialize(identifier)
+    def initialize(identifier, edge_types)
       @identifier = identifier
-      @rules = { up: [nil], down: [nil], left: [nil], right: [nil] }
+      @edge_types = edge_types
     end
   end
 end

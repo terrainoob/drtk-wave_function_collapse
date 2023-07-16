@@ -1,3 +1,4 @@
+require 'lib/wfc/wfc.rb'
 require 'lib/wfc/cell.rb'
 require 'lib/wfc/tile.rb'
 require 'lib/wfc/simple_tiled_model.rb'
