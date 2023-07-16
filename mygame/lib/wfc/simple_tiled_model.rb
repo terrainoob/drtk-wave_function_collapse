@@ -12,7 +12,6 @@ module Wfc
       # initialize uncollapsed_cells grid - this grid is to make finding lowest
       # entropy faster (I think) because we can constantly reduce the number of
       # cells we need to evaluate in that function
-      @uncollapsed_cells_grid = []
       # initialize processing grid - this is the final grid that will be returned
       @process_grid = Array.new(@output_width) { Array.new(@output_height) }
       x = 0
@@ -21,11 +20,11 @@ module Wfc
         while y < @output_height
           cell = Wfc::Cell.new(x, y, @tile_set)
           @process_grid[x][y] = cell
-          @uncollapsed_cells_grid << cell
           y += 1
         end
         x += 1
       end
+      @uncollapsed_cells_grid = @process_grid.flatten
     end
 
     def solve
