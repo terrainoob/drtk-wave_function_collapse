@@ -38,6 +38,7 @@ module Wfc
     end
 
     def iterate
+      @uncollapsed_cells_grid.collapse!
       return false if @uncollapsed_cells_grid.empty?
 
       next_cell = find_lowest_entropy
