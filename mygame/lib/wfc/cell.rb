@@ -1,7 +1,7 @@
 module Wfc
   class Cell
     attr_accessor :available_tiles
-    attr_reader :x, :y, :collapsed, :grid
+    attr_reader :x, :y, :collapsed, :grid, :tile_probabilities
 
     # x: the x coord of this cell in the cell array
     # y: the y coord of this cell in the cell array
@@ -11,6 +11,9 @@ module Wfc
       @collapsed = false
       @x = x
       @y = y
+      probs = @available_tiles.map(&:probability)
+      tile_ids = @available_tiles.map(&:identifier)
+      @tile_probabilities = tile_ids.zip(probs)
     end
 
     def update
@@ -20,7 +23,8 @@ module Wfc
     def collapse
       return if @available_tiles.nil?
 
-      @available_tiles = [@available_tiles.sample]
+      selected_id = @tile_probabilities.max_by { |_, weight| rand ** (1.0 / weight) }.first
+      @available_tiles = [@available_tiles.detect{ |t| t.identifier == selected_id }]
       @collapsed = true
     end
 
