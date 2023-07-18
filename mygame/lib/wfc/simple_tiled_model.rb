@@ -67,6 +67,7 @@ module Wfc
       original_tile_count = neighbor_cell.available_tiles.length
       source_edge_index = DIRECTION_TO_INDEX[evaluation_direction]
       check_edge_index = DIRECTION_TO_INDEX[OPPOSITE_OF[evaluation_direction]]
+      source_cell.available_tiles.compact! # make sure there aren't any null in here (I actually got on in a test run)
 
       new_available_tiles = []
       source_cell.available_tiles.each do |source_tile|

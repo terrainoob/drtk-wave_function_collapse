@@ -39,7 +39,7 @@ end
 def create_tile_array
   tiles = Array.new(9)
   9.times do |x|
-    tile = Wfc::Tile.new(rand(1000), [3,1,3,2]) # for now, just give some random identifier for testing
+    tile = Wfc::Tile.new(rand(1000), [3,1,3,2], rand(1)) # for now, just give some random identifier for testing
     tiles[x] = tile
   end
   tiles
