@@ -1,7 +1,6 @@
 module Wfc
   class Cell
-    attr_accessor :available_tiles
-    attr_reader :x, :y, :collapsed, :grid, :tile_probabilities
+    attr_reader :x, :y, :collapsed, :grid, :tile_probabilities, :available_tiles
 
     # x: the x coord of this cell in the cell array
     # y: the y coord of this cell in the cell array
@@ -11,9 +10,7 @@ module Wfc
       @collapsed = false
       @x = x
       @y = y
-      probs = @available_tiles.map(&:probability)
-      tile_ids = @available_tiles.map(&:identifier)
-      @tile_probabilities = tile_ids.zip(probs)
+      refresh_tile_probabilities
     end
 
     def update
@@ -24,8 +21,20 @@ module Wfc
       return if @available_tiles.nil?
 
       selected_id = @tile_probabilities.max_by { |_, weight| rand ** (1.0 / weight) }.first
-      @available_tiles = [@available_tiles.detect{ |t| t.identifier == selected_id }]
+      @available_tiles = [@available_tiles.detect { |t| t.identifier == selected_id }]
       @collapsed = true
+    end
+
+    def available_tiles=(new)
+      @available_tiles = new
+      refresh_tile_probabilities
+      @available_tiles
+    end
+
+    def refresh_tile_probabilities
+      probs = @available_tiles.map(&:probability)
+      tile_ids = @available_tiles.map(&:identifier)
+      @tile_probabilities = tile_ids.zip(probs)
     end
 
     def entropy

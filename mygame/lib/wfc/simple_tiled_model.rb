@@ -87,7 +87,8 @@ module Wfc
     def find_lowest_entropy
       @uncollapsed_cells_grid.compact!
       @uncollapsed_cells_grid.sort! { |c1, c2| c1.entropy <=> c2.entropy }
-      @uncollapsed_cells_grid.first
+      entropy = @uncollapsed_cells_grid.first.entropy
+      @uncollapsed_cells_grid.take_while { |c1| c1.entropy == entropy }.sample
     end
   end
 end
