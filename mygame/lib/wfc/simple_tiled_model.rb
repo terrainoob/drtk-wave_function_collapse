@@ -1,5 +1,7 @@
 module Wfc
   class SimpleTiledModel
+    attr_reader :output_width, :output_height
+
     # The tile_set should be an array of Wfc::Tile objects. Each one should be assigned
     # an identifier (most likely an tile index of some sort) and an edge_types array.
     # See tile.rb for an explanation of what the edge_types array should look like
