@@ -86,11 +86,38 @@ module Wfc
       propagate(neighbor_cell) if neighbor_cell.available_tiles.length != original_tile_count
     end
 
+    # this is SLOW!
+    # def find_lowest_entropy
+    #   @uncollapsed_cells_grid.compact!
+    #   @uncollapsed_cells_grid.sort! { |c1, c2| c1.entropy <=> c2.entropy }
+    #   entropy = @uncollapsed_cells_grid.first.entropy
+    #   @uncollapsed_cells_grid.take_while { |c1| c1.entropy == entropy }.sample
+    # end
+
+    # this is WAY FASTER! Thanks @leviongit
     def find_lowest_entropy
-      @uncollapsed_cells_grid.compact!
-      @uncollapsed_cells_grid.sort! { |c1, c2| c1.entropy <=> c2.entropy }
-      entropy = @uncollapsed_cells_grid.first.entropy
-      @uncollapsed_cells_grid.take_while { |c1| c1.entropy == entropy }.sample
+      ucg = @uncollapsed_cells_grid
+      i = 0
+      l = ucg.length
+      min_e = ucg[0].entropy
+      acc = []
+      while i < l
+        cc = ucg[i]
+        next i += 1 if !cc
+
+        ce = cc.entropy
+        if ce < min_e
+          min_e = ce
+          acc.clear
+          acc << cc
+        elsif ce == min_e
+          acc << cc
+        # else do nothing
+        end
+
+        i += 1
+      end
+      acc.sample
     end
   end
 end
