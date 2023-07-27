@@ -35,7 +35,7 @@ module Wfc
       y = rand(@output_height)
       cell = @process_grid[x][y]
       process_starting_cell(cell)
-      @process_grid.map { |arr| arr.map { |arr2| arr2.available_tiles[0] } }
+      generate_result_grid
     end
 
     def iterate
@@ -46,7 +46,29 @@ module Wfc
       return false unless next_cell
 
       process_starting_cell(next_cell)
-      @process_grid.map { |arr| arr.map { |arr2| arr2.available_tiles[0] } }
+      generate_result_grid
+      # @process_grid.map { |arr| arr.map { |arr2| arr2.available_tiles[0] } }
+    end
+
+    def generate_result_grid
+      # this is SLOW:
+      # @process_grid.map { |arr| arr.map { |arr2| arr2.available_tiles[0] } }
+
+      x = 0
+      result = []
+      lx = @process_grid.length
+      while x < lx
+        rx = result[x] = []
+        y = 0
+        pgx = @process_grid[x]
+        ly = pgx.length
+        while y < ly
+          rx[y] = pgx[y].available_tiles[0]
+          y += 1
+        end
+        x += 1
+      end
+      result
     end
 
     def process_starting_cell(cell)

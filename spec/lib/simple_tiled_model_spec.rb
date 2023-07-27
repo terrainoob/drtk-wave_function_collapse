@@ -1,8 +1,10 @@
 require 'spec_helper'
 
 describe Wfc::SimpleTiledModel do
-  let(:output_width) { 4 }
-  let(:output_height) { 4 }
+  let(:output_width) { 50 }
+  let(:output_height) { 50 }
+  # let(:output_width) { 4 }
+  # let(:output_height) { 4 }
   let(:tile1) { Wfc::Tile.new(1, [nil, 1, 2, 3], 0.5) }
   let(:tile2) { Wfc::Tile.new(2, [2, 2, 4, 3], 0.1) }
   let(:tile3) { Wfc::Tile.new(3, [3, 2, 4, 5], 0.15) }
@@ -26,9 +28,14 @@ describe Wfc::SimpleTiledModel do
   end
 
   it 'returns an array with valid adjoining tile identifiers' do
-    result = model.solve
-    while result = model.iterate
-      puts 'not sure what to actually test here yet'
+    RubyProf.start
+    model.solve
+    while model.iterate
+      # puts 'not sure what to actually test here yet'
+    end
+    prof_result = RubyProf.stop
+    File.open "/home/chris/apps/wfc/tmp/profile-graph.html", 'w+' do |file|
+      RubyProf::GraphHtmlPrinter.new(prof_result).print(file)
     end
   end
 end
