@@ -14,5 +14,6 @@ group :development, :test do
   gem 'rubocop-performance'
   gem 'rubocop-rspec'
   gem 'rubycritic'
+  gem 'ruby-prof'
   gem 'shoulda-matchers'
 end
