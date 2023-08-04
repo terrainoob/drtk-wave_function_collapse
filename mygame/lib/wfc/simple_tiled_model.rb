@@ -1,6 +1,6 @@
 module Wfc
   class SimpleTiledModel
-    attr_reader :output_width, :output_height
+    attr_reader :output_width, :output_height, :process_grid, :result_grid
 
     # The tile_set should be an array of Wfc::Tile objects. Each one should be assigned
     # an identifier (most likely an tile index of some sort) and an edge_types array.
@@ -35,7 +35,7 @@ module Wfc
       y = rand(@output_height)
       cell = @process_grid[x][y]
       process_starting_cell(cell)
-      generate_result_grid
+      @result_grid = generate_result_grid
     end
 
     def iterate
@@ -46,14 +46,11 @@ module Wfc
       return false unless next_cell
 
       process_starting_cell(next_cell)
-      generate_result_grid
-      # @process_grid.map { |arr| arr.map { |arr2| arr2.available_tiles[0] } }
+      @result_grid = generate_result_grid
     end
 
     def generate_result_grid
-      # this is SLOW:
-      # @process_grid.map { |arr| arr.map { |arr2| arr2.available_tiles[0] } }
-
+      # don't use map here. too slow!
       x = 0
       result = []
       lx = @process_grid.length

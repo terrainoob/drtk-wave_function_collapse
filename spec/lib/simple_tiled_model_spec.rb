@@ -1,38 +1,112 @@
 require 'spec_helper'
 
 describe Wfc::SimpleTiledModel do
-  let(:output_width) { 50 }
-  let(:output_height) { 50 }
-  # let(:output_width) { 4 }
-  # let(:output_height) { 4 }
-  let(:tile1) { Wfc::Tile.new(1, [nil, 1, 2, 3], 0.5) }
-  let(:tile2) { Wfc::Tile.new(2, [2, 2, 4, 3], 0.1) }
-  let(:tile3) { Wfc::Tile.new(3, [3, 2, 4, 5], 0.15) }
-  let(:tile4) { Wfc::Tile.new(4, [3, 6, 1, 8], 0.075) }
-  let(:tile5) { Wfc::Tile.new(5, [6, nil, nil, 3], 0.15) }
-  let(:tile6) { Wfc::Tile.new(6, [8, 3, 3, 3], 0.025) }
-
-  let(:tileset) do
-    grid = Array.new(3) { Array.new(3) }
-    grid[0] = [tile1, tile2, tile3]
-    grid[1] = [tile4, tile5, tile6]
-    grid[2] = [tile1, tile2, tile3]
-    grid
+  let(:tile_defs) do
+    [
+      { identifier: 0, edge_types: [1, 3, 6, 1], probability: 0.0 },
+      { identifier: 1, edge_types: [1, 3, 2, 3], probability: 0.0 },
+      { identifier: 2, edge_types: [1, 1, 4, 3], probability: 0.0 },
+      { identifier: 3, edge_types: [1, 1, 1, 1], probability: 10.0 },
+      { identifier: 4, edge_types: [2, 5, 4, 2], probability: 0.0 },
+      { identifier: 5, edge_types: [2, 5, 1, 5], probability: 0.0 },
+      { identifier: 6, edge_types: [2, 2, 6, 5], probability: 0.0 },
+      { identifier: 7, edge_types: [6, 2, 6, 1], probability: 0.0 },
+      { identifier: 8, edge_types: [2, 2, 2, 2], probability: 5.0 },
+      { identifier: 9, edge_types: [4, 1, 4, 2], probability: 0.0 },
+      { identifier: 10, edge_types: [1, 1, 1, 1], probability: 0.6 },
+      { identifier: 11, edge_types: [4, 1, 4, 2], probability: 0.0 },
+      { identifier: 12, edge_types: [1, 1, 1, 1], probability: 0.3 },
+      { identifier: 13, edge_types: [6, 2, 6, 1], probability: 0.0 },
+      { identifier: 14, edge_types: [6, 5, 1, 1], probability: 0.0 },
+      { identifier: 15, edge_types: [2, 5, 1, 5], probability: 0.0 },
+      { identifier: 16, edge_types: [4, 1, 1, 5], probability: 0.0 },
+      { identifier: 17, edge_types: [1, 1, 1, 1], probability: 0.6 },
+      { identifier: 18, edge_types: [4, 3, 2, 2], probability: 0.0 },
+      { identifier: 19, edge_types: [1, 3, 2, 3], probability: 0.0 },
+      { identifier: 20, edge_types: [6, 2, 2, 3], probability: 0.0 },
+      { identifier: 21, edge_types: [1, 10, 11, 1], probability: 0.1 },
+      { identifier: 22, edge_types: [1, 1, 10, 10], probability: 0.1 },
+      { identifier: 23, edge_types: [1, 1, 1, 1], probability: 0.6 },
+      { identifier: 24, edge_types: [1, 1, 1, 1], probability: 0.6 }
+    ]
   end
-  let(:model) { Wfc::SimpleTiledModel.new(tileset, output_width, output_height) }
-
-  it 'returns an array with the correct size' do
-    result = model.solve
-    expect(result.length).to eq output_width
-    expect(result[0].length).to eq output_height
+  let(:tiles) do
+    tiles = []
+    tile_defs.each do |tile_def|
+      tiles << Wfc::Tile.new(tile_def[:identifier], tile_def[:edge_types], tile_def[:probability])
+    end
+    tiles
   end
 
-  it 'returns an array with valid adjoining tile identifiers' do
+  let(:output_width) { 5 }
+  let(:output_height) { 5 }
+  let(:model) { Wfc::SimpleTiledModel.new(tiles, output_width, output_height) }
+
+  before do
+    srand(12345) # set the global rand seed so we can test consistently
+  end
+
+  context '#solve' do
+    before do
+      @result = model.solve
+    end
+
+    it 'returns an array with the correct size' do
+      expect(@result.length).to eq output_width
+      expect(@result[0].length).to eq output_height
+    end
+
+    it 'it collapses a randomly selected starting cell' do
+      expect(model.process_grid[2][1].collapsed).to be_truthy
+    end
+  end
+
+  context '#iterate' do
+    before do
+      model.solve
+    end
+
+    it 'returns an array with the correct size' do
+      result = model.iterate
+      expect(result.length).to eq output_width
+      expect(result[0].length).to eq output_height
+    end
+
+    it 'collapses at least one more cell' do
+      model.iterate
+      expect(model.process_grid.flatten.filter(&:collapsed).count).to be >= 2
+    end
+  end
+
+  context '#solve_all' do
+    it 'completes all the iterations in one step' do
+      skip
+      # model.solve_all
+    end
+  end
+
+  context 'completed run' do
+    before do
+      model.solve
+      {} while model.iterate
+    end
+
+    it 'eventually collapses all cells' do
+      expect(model.process_grid.flatten.filter(&:collapsed).count).to eq output_width * output_height
+    end
+
+    it 'returns valid identifiers in each result cell' do
+      model.result_grid.flatten.each do |tile|
+        expect((0..24).to_a).to include(tile.identifier)
+      end
+    end
+  end
+
+  xit 'has a profiling test' do
+    model = Wfc::SimpleTiledModel.new(tiles, 50, 50)
     RubyProf.start
     model.solve
-    while model.iterate
-      # puts 'not sure what to actually test here yet'
-    end
+    {} while model.iterate
     prof_result = RubyProf.stop
     File.open "/home/chris/apps/wfc/tmp/profile-graph.html", 'w+' do |file|
       RubyProf::GraphHtmlPrinter.new(prof_result).print(file)
