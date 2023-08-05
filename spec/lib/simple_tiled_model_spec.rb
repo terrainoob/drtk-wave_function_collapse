@@ -72,13 +72,21 @@ describe Wfc::SimpleTiledModel do
   end
 
   context '#solve_all' do
-    it 'completes all the iterations in one step' do
-      skip
-      # model.solve_all
+    before do
+      @result = model.solve_all
+    end
+
+    it 'returns an array with the correct size' do
+      expect(@result.length).to eq output_width
+      expect(@result[0].length).to eq output_height
+    end
+
+    it 'collapses all cells' do
+      expect(model.process_grid.flatten.filter(&:collapsed).count).to eq output_width * output_height
     end
   end
 
-  context 'completed run' do
+  context 'completed iterative run' do
     before do
       model.solve
       {} while model.iterate
@@ -95,7 +103,7 @@ describe Wfc::SimpleTiledModel do
     end
   end
 
-  skip context 'profiling' do
+  context 'profiling' do
     let(:model) { Wfc::SimpleTiledModel.new(tiles, 50, 50) }
 
     before do
@@ -115,10 +123,10 @@ describe Wfc::SimpleTiledModel do
       @prof_result = RubyProf.stop
     end
 
-    # it 'profiles solve_all' do
-    #   RubyProf.start
-    #   model.solve_all
-    #   @prof_result = RubyProf.stop
-    # end
+    it 'profiles solve_all' do
+      RubyProf.start
+      model.solve_all
+      @prof_result = RubyProf.stop
+    end
   end
 end

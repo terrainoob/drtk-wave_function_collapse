@@ -10,6 +10,24 @@ def tick args
     args.state.tileset = Tiled::Tileset.load('sprites/forest/tileset.tsx')
     tiles = create_tile_array(args.state.tileset)
     args.state.model = Wfc::SimpleTiledModel.new(tiles, 45, 25)
+  end
+
+  #######################################################################
+  # This section runs the entire solver at once and THEN paints the map
+  # press 'a' to solve the entire map
+  #######################################################################
+  if args.inputs.keyboard.a
+    tiled_map = args.state.model.solve_all
+    args.state.tiled_map = tiled_map
+    refresh_target(args, tiled_map)
+  end
+
+  #######################################################################
+  # This section will #iterate one step at a time to see the actual map generation
+  # press 's' once to start the solver and then
+  # press 'i' to solve each iteration iteration
+  #######################################################################
+  if args.inputs.keyboard.s
     tiled_map = args.state.model.solve
     args.state.tiled_map = tiled_map
     refresh_target(args, tiled_map)
@@ -18,12 +36,15 @@ def tick args
   if args.inputs.keyboard.i
     args.state.iteration += 1
     tiled_map = args.state.model.iterate
-    if tiled_map && args.state.iteration % 60 == 0
+    if tiled_map && args.state.iteration
       args.state.tiled_map = tiled_map
       refresh_target(args, tiled_map)
     end
   end
 
+  #######################################################################
+  # press 'r' to reset the map
+  #######################################################################
   if args.inputs.keyboard.key_down.r
     args.state.tileset = Tiled::Tileset.load('sprites/forest/tileset.tsx')
     tiles = create_tile_array(args.state.tileset)

@@ -1,5 +1,7 @@
 module Wfc
   class SimpleTiledModel
+    MAX_ITERATIONS = 5_000
+
     attr_reader :output_width, :output_height, :process_grid, :result_grid
 
     # The tile_set should be an array of hashes. Each tile hash should be:
@@ -39,11 +41,23 @@ module Wfc
       @uncollapsed_cells_grid = @process_grid.flatten
     end
 
+    # this is the one-step solver.
+    # Calling #solve_all has the same end result as calling #solve and then many #iterate
+    def solve_all
+      cell = randomize_first_cell
+      process_starting_cell(cell)
+      safety_net = 0
+      while @uncollapsed_cells_grid.length.positive? && safety_net <= MAX_ITERATIONS
+        next_cell = find_lowest_entropy
+        process_starting_cell(next_cell) if next_cell
+        @uncollapsed_cells_grid.compact!
+        safety_net += 1
+      end
+      @result_grid = generate_result_grid
+    end
+
     def solve
-      # randomly select a first cell to collapse
-      x = rand(@output_width)
-      y = rand(@output_height)
-      cell = @process_grid[x][y]
+      cell = randomize_first_cell
       process_starting_cell(cell)
       @result_grid = generate_result_grid
     end
@@ -57,6 +71,12 @@ module Wfc
 
       process_starting_cell(next_cell)
       @result_grid = generate_result_grid
+    end
+
+    def randomize_first_cell
+      x = rand(@output_width)
+      y = rand(@output_height)
+      @process_grid[x][y]
     end
 
     def generate_result_grid
@@ -81,6 +101,8 @@ module Wfc
     def process_starting_cell(cell)
       cell.collapse
       @uncollapsed_cells_grid -= [cell]
+      return if @uncollapsed_cells_grid.empty?
+
       propagate(cell)
     end
 
