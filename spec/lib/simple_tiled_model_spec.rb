@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Wfc::SimpleTiledModel do
-  let(:tile_defs) do
+  let(:tiles) do
     [
       { identifier: 0, edge_types: [1, 3, 6, 1], probability: 0.0 },
       { identifier: 1, edge_types: [1, 3, 2, 3], probability: 0.0 },
@@ -29,13 +29,6 @@ describe Wfc::SimpleTiledModel do
       { identifier: 23, edge_types: [1, 1, 1, 1], probability: 0.6 },
       { identifier: 24, edge_types: [1, 1, 1, 1], probability: 0.6 }
     ]
-  end
-  let(:tiles) do
-    tiles = []
-    tile_defs.each do |tile_def|
-      tiles << Wfc::Tile.new(tile_def[:identifier], tile_def[:edge_types], tile_def[:probability])
-    end
-    tiles
   end
 
   let(:output_width) { 5 }
@@ -97,19 +90,35 @@ describe Wfc::SimpleTiledModel do
 
     it 'returns valid identifiers in each result cell' do
       model.result_grid.flatten.each do |tile|
-        expect((0..24).to_a).to include(tile.identifier)
+        expect((0..24).to_a).to include(tile[:identifier])
       end
     end
   end
 
-  xit 'has a profiling test' do
-    model = Wfc::SimpleTiledModel.new(tiles, 50, 50)
-    RubyProf.start
-    model.solve
-    {} while model.iterate
-    prof_result = RubyProf.stop
-    File.open "/home/chris/apps/wfc/tmp/profile-graph.html", 'w+' do |file|
-      RubyProf::GraphHtmlPrinter.new(prof_result).print(file)
+  skip context 'profiling' do
+    let(:model) { Wfc::SimpleTiledModel.new(tiles, 50, 50) }
+
+    before do
+      RubyProf.measure_mode = RubyProf::WALL_TIME
     end
+
+    after do
+      path = "/home/chris/apps/wfc/tmp/profiles/"
+      printer = RubyProf::MultiPrinter.new(@prof_result, %i[flat graph_html])
+      printer.print(path: path, profile: "profile-_#{Time.now.strftime('%H%M%S')}")
+    end
+
+    it 'profiles iterations' do
+      RubyProf.start
+      model.solve
+      {} while model.iterate
+      @prof_result = RubyProf.stop
+    end
+
+    # it 'profiles solve_all' do
+    #   RubyProf.start
+    #   model.solve_all
+    #   @prof_result = RubyProf.stop
+    # end
   end
 end

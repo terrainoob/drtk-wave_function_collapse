@@ -2,9 +2,19 @@ module Wfc
   class SimpleTiledModel
     attr_reader :output_width, :output_height, :process_grid, :result_grid
 
-    # The tile_set should be an array of Wfc::Tile objects. Each one should be assigned
-    # an identifier (most likely an tile index of some sort) and an edge_types array.
-    # See tile.rb for an explanation of what the edge_types array should look like
+    # The tile_set should be an array of hashes. Each tile hash should be:
+    #
+    # { identifier: some_id, edge_types: [top, right, bottom, left], probability: some_float }
+    # NOTE: the algorithm assumes the array of edge types is given in the order above
+    #
+    # identifier: this can be any unique identifier for the tile, e.g. a tile index
+    # edge_type: an array of any kind of identifier that determines the types of edges this is
+    #            this can be a color hash, an arbitrary number, or anything else that makes sense
+    #            to you
+    # probability: the weighted chance for tile to be picked from the available tiles when a
+    #              cell is collapsed. Note that the total of the probabilities don't need to
+    #              sum to 100.  The sum can be more or less. The algorithm handles that.
+    #              These are treated more as relative weights than actual mathematical probabilities.
 
     def initialize(tile_set, output_width, output_height)
       @tile_set = tile_set
@@ -88,16 +98,16 @@ module Wfc
       original_tile_count = neighbor_cell.available_tiles.length
       source_edge_index = DIRECTION_TO_INDEX[evaluation_direction]
       check_edge_index = DIRECTION_TO_INDEX[OPPOSITE_OF[evaluation_direction]]
-      source_cell.available_tiles.compact! # make sure there aren't any null in here (I actually got on in a test run)
+      source_cell.available_tiles.compact! # make sure there aren't any null in here (I actually got one in a test run)
 
       new_available_tiles = []
       source_cell.available_tiles.each do |source_tile|
-        source_edge_type = source_tile.edge_types[source_edge_index]
+        source_edge_type = source_tile[:edge_types][source_edge_index]
         neighbor_cell.available_tiles.each do |tile|
-          new_available_tiles << tile if tile.edge_types[check_edge_index] == source_edge_type
+          new_available_tiles << tile if tile[:edge_types][check_edge_index] == source_edge_type
         end
       end
-      neighbor_cell.available_tiles = new_available_tiles.uniq(&:identifier) unless new_available_tiles.empty?
+      neighbor_cell.available_tiles = new_available_tiles.uniq { |t| t[:identifier] } unless new_available_tiles.empty?
       neighbor_cell.update
       @uncollapsed_cells_grid -= [neighbor_cell] if neighbor_cell.collapsed
 
@@ -105,15 +115,6 @@ module Wfc
       propagate(neighbor_cell) if neighbor_cell.available_tiles.length != original_tile_count
     end
 
-    # this is SLOW!
-    # def find_lowest_entropy
-    #   @uncollapsed_cells_grid.compact!
-    #   @uncollapsed_cells_grid.sort! { |c1, c2| c1.entropy <=> c2.entropy }
-    #   entropy = @uncollapsed_cells_grid.first.entropy
-    #   @uncollapsed_cells_grid.take_while { |c1| c1.entropy == entropy }.sample
-    # end
-
-    # this is WAY FASTER! Thanks @leviongit
     def find_lowest_entropy
       ucg = @uncollapsed_cells_grid
       i = 0

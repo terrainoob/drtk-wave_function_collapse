@@ -1,7 +1,6 @@
 require 'byebug'
 require 'ruby-prof'
 require "#{File.dirname(__FILE__)}/../mygame/lib/wfc/wfc"
-require "#{File.dirname(__FILE__)}/../mygame/lib/wfc/tile"
 require "#{File.dirname(__FILE__)}/../mygame/lib/wfc/cell"
 require "#{File.dirname(__FILE__)}/../mygame/lib/wfc/simple_tiled_model"
 require "#{File.dirname(__FILE__)}/../mygame/lib/wfc/overlapping_model"

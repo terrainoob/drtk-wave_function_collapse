@@ -1,12 +1,12 @@
 require 'lib/wfc/wfc.rb'
 require 'lib/wfc/cell.rb'
-require 'lib/wfc/tile.rb'
 require 'lib/wfc/simple_tiled_model.rb'
 require 'lib/wfc/overlapping_model.rb'
 require 'lib/tiled/tiled.rb'
 
 def tick args
   if args.tick_count.zero?
+    args.state.iteration = 0
     args.state.tileset = Tiled::Tileset.load('sprites/forest/tileset.tsx')
     tiles = create_tile_array(args.state.tileset)
     args.state.model = Wfc::SimpleTiledModel.new(tiles, 45, 25)
@@ -16,8 +16,9 @@ def tick args
   end
 
   if args.inputs.keyboard.i
+    args.state.iteration += 1
     tiled_map = args.state.model.iterate
-    if tiled_map
+    if tiled_map && args.state.iteration % 60 == 0
       args.state.tiled_map = tiled_map
       refresh_target(args, tiled_map)
     end
@@ -45,7 +46,11 @@ end
 
 def create_tile_array(tileset)
   tileset.wangsets.last.tiles.map do |id, wangtile|
-    Wfc::Tile.new(id, wangtile.wangid4, wangtile.tile.probability.to_f || 1.0)
+    {
+      identifier: id,
+      edge_types: wangtile.wangid4,
+      probability: wangtile.tile.probability.to_f || 1.0
+    }
   end
 end
 
@@ -58,6 +63,7 @@ def refresh_target(args, tiled_map)
     next unless wfc_tile
     args.state.tileset.sprite_at(x * 13, y * 13, wfc_tile.identifier)
   end
+  args.state.iteration = 0
 end
 
 def tile_id(tile)
