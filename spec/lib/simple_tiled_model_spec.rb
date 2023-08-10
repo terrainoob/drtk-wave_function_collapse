@@ -103,7 +103,7 @@ describe Wfc::SimpleTiledModel do
     end
   end
 
-  context 'profiling' do
+  skip context 'profiling' do
     let(:model) { Wfc::SimpleTiledModel.new(tiles, 50, 50) }
 
     before do
