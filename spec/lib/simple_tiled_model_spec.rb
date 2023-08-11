@@ -103,7 +103,7 @@ describe Wfc::SimpleTiledModel do
     end
   end
 
-  skip context 'profiling' do
+  context 'profiling' do
     let(:model) { Wfc::SimpleTiledModel.new(tiles, 50, 50) }
 
     before do
@@ -113,10 +113,11 @@ describe Wfc::SimpleTiledModel do
     after do
       path = "/home/chris/apps/wfc/tmp/profiles/"
       printer = RubyProf::MultiPrinter.new(@prof_result, %i[flat graph_html])
-      printer.print(path: path, profile: "profile-_#{Time.now.strftime('%H%M%S')}")
+      printer.print(path: path, profile: "profile_#{@prof_type}_#{Time.now.strftime('%Y%m%d%H%M%S')}")
     end
 
-    it 'profiles iterations' do
+    xit 'profiles iterations' do
+      @prof_type = 'iter'
       RubyProf.start
       model.solve
       {} while model.iterate
@@ -124,6 +125,7 @@ describe Wfc::SimpleTiledModel do
     end
 
     it 'profiles solve_all' do
+      @prof_type = 'all'
       RubyProf.start
       model.solve_all
       @prof_result = RubyProf.stop
