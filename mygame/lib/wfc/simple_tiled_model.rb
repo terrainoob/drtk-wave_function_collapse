@@ -123,9 +123,11 @@ module Wfc
       source_cell.available_tiles.compact! # make sure there aren't any null in here (I actually got one in a test run)
 
       new_available_tiles = []
-      source_cell.available_tiles.each do |source_tile|
+      source_available_tiles = source_cell.available_tiles
+      neighbor_available_tiles = neighbor_cell.available_tiles
+      source_available_tiles.each do |source_tile|
         source_edge_type = source_tile[:edge_types][source_edge_index]
-        neighbor_cell.available_tiles.each do |tile|
+        neighbor_available_tiles.each do |tile|
           new_available_tiles << tile if tile[:edge_types][check_edge_index] == source_edge_type
         end
       end

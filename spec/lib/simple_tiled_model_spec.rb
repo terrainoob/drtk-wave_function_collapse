@@ -124,7 +124,7 @@ describe Wfc::SimpleTiledModel do
       @prof_result = RubyProf.stop
     end
 
-    it 'profiles solve_all' do
+    xit 'profiles solve_all' do
       @prof_type = 'all'
       RubyProf.start
       model.solve_all
