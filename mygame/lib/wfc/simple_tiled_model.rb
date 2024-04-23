@@ -133,7 +133,7 @@ module Wfc
       end
       neighbor_cell.available_tiles = new_available_tiles.uniq { |t| t[:identifier] } unless new_available_tiles.empty?
       neighbor_cell.update
-      @uncollapsed_cells_grid -= [neighbor_cell] if neighbor_cell.collapsed
+      @uncollapsed_cells_grid.delete(neighbor_cell) if neighbor_cell.collapsed
 
       # if the number of available_tiles changed, we need to evaluate THIS cell's neighbors now
       propagate(neighbor_cell) if neighbor_cell.available_tiles.length != original_tile_count
