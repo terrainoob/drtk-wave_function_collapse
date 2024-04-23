@@ -100,7 +100,7 @@ module Wfc
 
     def process_starting_cell(cell)
       cell.collapse
-      @uncollapsed_cells_grid -= [cell]
+      @uncollapsed_cells_grid.delete(cell)
       return if @uncollapsed_cells_grid.empty?
 
       propagate(cell)
